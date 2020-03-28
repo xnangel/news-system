@@ -1,16 +1,16 @@
 package com.sunxn.news.webcrawler.task;
 
+import com.sunxn.news.common.utils.DateUtil;
+import com.sunxn.news.webcrawler.pipeline.NewsDataPipeline;
 import com.sunxn.news.webcrawler.pojo.NewsDetail;
 import com.sunxn.news.webcrawler.pojo.NewsItem;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
-import us.codecraft.webmagic.pipeline.ConsolePipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.scheduler.BloomFilterDuplicateRemover;
 import us.codecraft.webmagic.scheduler.QueueScheduler;
@@ -30,16 +30,14 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class NewsProcessor implements PageProcessor {
+public class NewsHighlightsProcessor implements PageProcessor {
 
     private Map<String, String> map = new HashMap<>();
 
     /**
      * 人民日报 ip地址+端口号 公共前缀
      */
-    public static final String PEOPLE_PAGE_URL = "http://paper.people.com.cn/rmrb";
-
-    private String peoplePageUrl = "http://paper.people.com.cn/rmrb/html/2020-03/27/nbs.D110000renmrb_01.htm";
+    private static final String PEOPLE_PAPER_URL = "http://paper.people.com.cn/rmrb";
 
     @Override
     public void process(Page page) {
@@ -69,6 +67,10 @@ public class NewsProcessor implements PageProcessor {
         NewsDetail newsDetail = new NewsDetail();
         Html html = page.getHtml();
         // 封装新闻对象
+        newsDetail.setCome(html.css("div.text_c div.lai", "text").toString());
+        String content = html.css("div.text_c div.c_c").all().stream().collect(Collectors.joining(" "));
+        newsDetail.setContent(content.replace("../../..", PEOPLE_PAPER_URL));
+
         newsItem.setTitle(html.css("div.text_c h1", "text").toString());
         String url = page.getUrl().toString();
         newsItem.setUrl(url);
@@ -76,8 +78,7 @@ public class NewsProcessor implements PageProcessor {
         newsItem.setCategoryName(this.map.get(key));
         newsItem.setCreateTime(new Date());
         newsItem.setUpdateTime(new Date());
-        newsDetail.setCome(html.css("div.text_c div.lai", "text").toString());
-        newsDetail.setContent(html.css("div.text_c div.c_c").all().stream().collect(Collectors.joining(" ")).replace("../../..", PEOPLE_PAGE_URL));
+
         // 把结果保存起来
         page.putField("newsItem", newsItem);
         page.putField("newsDetail", newsDetail);
@@ -103,12 +104,15 @@ public class NewsProcessor implements PageProcessor {
     @Autowired
     private NewsDataPipeline newsDataPipeline;
 
-    @Scheduled(initialDelay = 1000, fixedDelay = 2*60*60*1000)
     public void spiderProcess() {
-        Spider.create(new NewsProcessor())
-                .addUrl(peoplePageUrl)
+        String dateNow = DateUtil.getDateNow(DateUtil.DATE_FORMAT_YYYY_MM_DD);
+        String[] dateSplit = dateNow.split("-");
+        String url = PEOPLE_PAPER_URL + "/html/" + dateSplit[0] + "-" + dateSplit[1] + "/" + dateSplit[2] + "/nbs.D110000renmrb_01.htm";
+
+        Spider.create(new NewsHighlightsProcessor())
+                .addUrl(url)
                 .setScheduler(new QueueScheduler().setDuplicateRemover(new BloomFilterDuplicateRemover(1000000)))
-                .thread(10)
+                .thread(30)
                 .addPipeline(this.newsDataPipeline)
                 .run();
     }

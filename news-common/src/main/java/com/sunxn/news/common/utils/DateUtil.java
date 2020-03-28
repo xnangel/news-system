@@ -76,8 +76,8 @@ public class DateUtil {
      * 获取当前时间的格式化数据，年月日时分秒
      * @return
      */
-    public static String getDateNow() {
-        return parseDateToStr(new Date(), DATE_FORMAT_YYYY_MM_DD_HH_MI_SS);
+    public static String getDateNow(String pattern) {
+        return parseDateToStr(new Date(), pattern);
     }
 
 }

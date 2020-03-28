@@ -11,6 +11,8 @@
         <module>news-registry</module>
         <module>news-gateway</module>
         <module>news-item</module>
+        <module>news-webcrawler</module>
+        <module>news-common</module>
     </modules>
     <packaging>pom</packaging>
 

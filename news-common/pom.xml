@@ -12,5 +12,13 @@
     <groupId>com.sunxn.news.common</groupId>
     <artifactId>news-common</artifactId>
 
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+        </dependency>
+
+    </dependencies>
 
 </project>
