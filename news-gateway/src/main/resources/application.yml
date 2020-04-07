@@ -8,7 +8,14 @@ eureka:
     service-url:
       defaultZone: http://127.0.0.1:10001/eureka
 zuul:
-  prefix: /api
+  prefix: /api  # 添加路由前置
+  routes:
+    webcrawler-service:
+      path: /webcrawler/**
+      serviceId: webcrawler-service
+      strip-prefix: false
+    item-service: /item/**
+
 hystrix:
   command:
     default:

@@ -7,6 +7,7 @@ import com.sunxn.news.webcrawler.service.NewsItemService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.Pipeline;
@@ -27,6 +28,7 @@ public class NewsDataPipeline implements Pipeline {
     private NewsDetailService newsDetailService;
 
     @Override
+    @Transactional
     public void process(ResultItems resultItems, Task task) {
         // 获取封装好的NewsItem对象
         NewsItem newsItem = resultItems.get("newsItem");

@@ -13,6 +13,7 @@
         <module>news-item</module>
         <module>news-webcrawler</module>
         <module>news-common</module>
+        <module>news-upload</module>
     </modules>
     <packaging>pom</packaging>
 

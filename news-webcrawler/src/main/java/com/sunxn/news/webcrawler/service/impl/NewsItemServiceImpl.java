@@ -40,7 +40,7 @@ public class NewsItemServiceImpl implements NewsItemService {
         newsItem.setCategoryId(category.getId());
         if (newsItemRepository.insertSelective(newsItem) != 1) {
             // 保存失败，报异常
-            log.error("【爬虫服务】 newsItem保存失败，newsItem={}", newsItem);
+            log.error("【爬虫服务】 newsItem保存失败，newsItem title={}, categoryName={}", newsItem.getTitle(), newsItem.getCategoryName());
             throw new SunxnNewsException(NewsSystemExceptionEnum.NEWS_ITEM_SAVE_FAIL);
         }
     }

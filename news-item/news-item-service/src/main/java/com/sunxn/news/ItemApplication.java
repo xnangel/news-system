@@ -3,6 +3,7 @@ package com.sunxn.news;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import tk.mybatis.spring.annotation.MapperScan;
 
 /**
  * @description: 新闻服务启动类
@@ -11,6 +12,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  */
 @SpringBootApplication
 @EnableDiscoveryClient
+@MapperScan("com.sunxn.news.item.mapper")
 public class ItemApplication {
 
     public static void main(String[] args) {

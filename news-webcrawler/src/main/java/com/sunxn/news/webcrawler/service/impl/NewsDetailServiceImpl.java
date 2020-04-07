@@ -24,7 +24,7 @@ public class NewsDetailServiceImpl implements NewsDetailService {
     @Override
     public void save(NewsDetail newsDetail) {
         if (newsDetailRepository.insertSelective(newsDetail) != 1) {
-            log.error("【爬虫服务】 newsDetail保存失败，newsDetail={}", newsDetail);
+            log.error("【爬虫服务】 newsDetail保存失败，newsDetail newsId={}, come={}", newsDetail.getNewsId(), newsDetail.getCome());
             // 保存失败，抛异常
             throw new SunxnNewsException(NewsSystemExceptionEnum.NEWS_DETAILS_SAVE_FAIL);
         }
