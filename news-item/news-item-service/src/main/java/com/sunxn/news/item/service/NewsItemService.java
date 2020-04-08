@@ -12,6 +12,7 @@ import com.sunxn.news.item.mapper.NewsItemMapper;
 import com.sunxn.news.pojo.Category;
 import com.sunxn.news.pojo.NewsDetail;
 import com.sunxn.news.pojo.NewsItem;
+import com.sunxn.news.ro.NewsRequest;
 import com.sunxn.news.vo.NewsItemVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -80,12 +81,11 @@ public class NewsItemService {
             criteria.andEqualTo("status", isSend);
         }
         if (isToday) {
-            // TODO 通用mapper的时间比较还待修改
             Date nowTime = new Date();
             Date timeStart = DateUtil.getStartOfDay(nowTime);
             Date timeEnd = DateUtil.getEndOfDay(nowTime);
-            criteria.andGreaterThanOrEqualTo("create_time", timeStart);
-            criteria.andLessThanOrEqualTo("create_time", timeEnd);
+            criteria.andGreaterThanOrEqualTo("createTime", DateUtil.parseDateToStr(timeStart, DateUtil.DATE_FORMAT_YYYY_MM_DD_HH_MI_SS));
+            criteria.andLessThanOrEqualTo("createTime", DateUtil.parseDateToStr(timeEnd, DateUtil.DATE_FORMAT_YYYY_MM_DD_HH_MI_SS));
         }
         // 排序
         String orderStr = "";
@@ -151,4 +151,47 @@ public class NewsItemService {
             throw new SunxnNewsException(NewsSystemExceptionEnum.NEWS_ITEM_DELETE_ERROR);
         }
     }
+
+    /**
+     * 保存news信息
+     * @param newsRequest
+     */
+    @Transactional
+    public void saveNews(NewsRequest newsRequest) {
+        NewsItem newsItem = new NewsItem();
+        BeanUtils.copyProperties(newsRequest, newsItem);
+        newsItem.setId(null);
+        newsItem.setCreateTime(new Date());
+        newsItem.setUpdateTime(new Date());
+        if (newsItemMapper.insert(newsItem) != 1) {
+            throw new SunxnNewsException(NewsSystemExceptionEnum.NEWS_ITEM_SAVE_FAIL);
+        }
+        NewsDetail newsDetail = new NewsDetail();
+        BeanUtils.copyProperties(newsRequest.getDetails(), newsDetail);
+        newsDetail.setId(null);
+        newsDetail.setNewsId(newsItem.getId());
+        if (newsDetail.getNewsId() == null || newsDetailMapper.insert(newsDetail) != 1) {
+            throw new SunxnNewsException(NewsSystemExceptionEnum.NEWS_DETAILS_SAVE_FAIL);
+        }
+    }
+
+    /**
+     * 更新、编辑news信息
+     * @param newsRequest
+     */
+    @Transactional
+    public void updateNews(NewsRequest newsRequest) {
+        NewsItem newsItem = new NewsItem();
+        BeanUtils.copyProperties(newsRequest, newsItem);
+        if (newsItemMapper.updateByPrimaryKeySelective(newsItem) != 1) {
+            throw new SunxnNewsException(NewsSystemExceptionEnum.NEWS_ITEM_UPDATE_ERROR);
+        }
+
+        NewsDetail newsDetail = new NewsDetail();
+        BeanUtils.copyProperties(newsRequest.getDetails(), newsDetail);
+        if (newsDetailMapper.updateByPrimaryKeySelective(newsDetail) != 1) {
+            throw new SunxnNewsException(NewsSystemExceptionEnum.NEWS_DETAILS_UPDATE_ERROR);
+        }
+    }
+
 }

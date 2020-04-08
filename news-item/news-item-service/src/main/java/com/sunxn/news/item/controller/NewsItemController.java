@@ -64,6 +64,7 @@ public class NewsItemController {
      */
     @PostMapping("/news")
     public ResponseEntity<Void> saveNews(@RequestBody NewsRequest newsRequest) {
+        newsItemService.saveNews(newsRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -73,6 +74,7 @@ public class NewsItemController {
      */
     @PutMapping("/news")
     public ResponseEntity<Void> updateNews(@RequestBody NewsRequest newsRequest) {
+        newsItemService.updateNews(newsRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

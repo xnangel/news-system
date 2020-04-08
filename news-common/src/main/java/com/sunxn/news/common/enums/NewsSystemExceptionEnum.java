@@ -16,6 +16,8 @@ public enum NewsSystemExceptionEnum {
 
     NEWS_ITEM_SAVE_FAIL(500, "新闻保存失败"),
     NEWS_DETAILS_SAVE_FAIL(500, "新闻详情保存失败"),
+    NEWS_ITEM_UPDATE_ERROR(500, "新闻更新失败"),
+    NEWS_DETAILS_UPDATE_ERROR(500, "新闻详情更新失败"),
     NOT_FOUND_CATEGORIES(404, "未找到新闻类目"),
     NOT_FOUND_NEWS_ITEM(404, "未找到相关新闻"),
     NOT_FOUND_NEWS_DETAIL(404, "未找到新闻详情"),

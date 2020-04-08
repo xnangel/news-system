@@ -94,6 +94,11 @@ public class DateUtil {
         return Date.from(endOfDay.atZone(ZoneId.systemDefault()).toInstant());
     }
 
+    /**
+     * 获得某天最小时间
+     * @param date
+     * @return
+     */
     public static Date getStartOfDay(Date date) {
         LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()), ZoneId.systemDefault());
         LocalDateTime startOfDay = localDateTime.with(LocalTime.MIN);
