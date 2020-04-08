@@ -22,7 +22,7 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping("/findAll")
+    @GetMapping("/find/list")
     public ResponseEntity<List<Category>> findAllCategory() {
         return ResponseEntity.ok(categoryService.findAllCategory());
     }

@@ -15,7 +15,10 @@ zuul:
       serviceId: webcrawler-service
       strip-prefix: false
     item-service: /item/**
-
+    upload-service:
+      path: /upload/**
+      serviceId: upload-service
+      strip-prefix: false
 hystrix:
   command:
     default:

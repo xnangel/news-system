@@ -3,6 +3,7 @@ package com.sunxn.news.item.controller;
 import com.sunxn.news.common.vo.PageResult;
 import com.sunxn.news.item.service.NewsItemService;
 import com.sunxn.news.pojo.NewsItem;
+import com.sunxn.news.ro.NewsRequest;
 import com.sunxn.news.vo.NewsItemVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,10 +52,28 @@ public class NewsItemController {
     /**
      * 根据newsItem id删除newsItem和newsDetail信息
      */
-    @RequestMapping(value = "/delete/{id}")
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> deleteNewsItemById(@PathVariable("id") Long newsId) {
         newsItemService.deleteNewsItemById(newsId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    /**
+     * news新增
+     * @return
+     */
+    @PostMapping("/news")
+    public ResponseEntity<Void> saveNews(@RequestBody NewsRequest newsRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /**
+     * news更新
+     * @return
+     */
+    @PutMapping("/news")
+    public ResponseEntity<Void> updateNews(@RequestBody NewsRequest newsRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("find/{categoryId}")
