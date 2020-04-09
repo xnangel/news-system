@@ -19,5 +19,7 @@ public class Category {
     @KeySql(useGeneratedKeys = true)
     private Long id;
     private String name;
-    private Integer sort;
+    private Integer type;
+    private Boolean status;
+    private String notes;
 }

@@ -26,6 +26,10 @@ public enum NewsSystemExceptionEnum {
     NEWS_DETAIL_DELETE_ERROR(500, "新闻详情删除失败"),
     INVALID_FILE_TYPE(400, "无效的文件类型"),
     UPLOAD_FILE_ERROR(500, "文件上传失败"),
+    CATEGORY_STATUS_UPDATE_ERROR(500, "分类启用状态更新失败"),
+    CATEGORY_UPDATE_ERROR(500, "分类更新失败"),
+    CATEGORY_SAVE_ERROR(500, "分类保存失败"),
+    CATEGORY_NAME_SAME_ERROR(400, "分类名称唯一不能相同"),
     ;
 
     private int code;
