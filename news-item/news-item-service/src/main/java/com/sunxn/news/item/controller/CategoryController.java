@@ -3,6 +3,7 @@ package com.sunxn.news.item.controller;
 import com.sunxn.news.common.vo.PageResult;
 import com.sunxn.news.item.service.CategoryService;
 import com.sunxn.news.pojo.Category;
+import com.sunxn.news.vo.CategoryNewsItemVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,16 @@ public class CategoryController {
     @GetMapping("/find/list")
     public ResponseEntity<List<Category>> findAllCategory() {
         return ResponseEntity.ok(categoryService.findAllCategory());
+    }
+
+    /**
+     * 根据类型查询category集合，注意：category是启用状态的
+     * @param type
+     * @return
+     */
+    @GetMapping("/find/{type}")
+    public ResponseEntity<List<Category>> findCategoriesByType(@PathVariable("type") Integer type) {
+        return ResponseEntity.ok(categoryService.findCategoriesByType(type));
     }
 
     /**
@@ -79,4 +90,13 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    /**
+     * 根据type查询category和对应的newsItem集合
+     * @param type
+     * @return
+     */
+    @GetMapping("/find/categoryNewsItem/{type}")
+    public ResponseEntity<List<CategoryNewsItemVo>> findCategoryNewsItemsListByType(@PathVariable("type") Integer type) {
+        return ResponseEntity.ok(categoryService.findCategoryNewsItemsListByType(type));
+    }
 }

@@ -6,13 +6,18 @@ import com.sunxn.news.common.enums.NewsSystemExceptionEnum;
 import com.sunxn.news.common.exception.SunxnNewsException;
 import com.sunxn.news.common.vo.PageResult;
 import com.sunxn.news.item.mapper.CategoryMapper;
+import com.sunxn.news.item.mapper.NewsItemMapper;
 import com.sunxn.news.pojo.Category;
+import com.sunxn.news.pojo.NewsItem;
+import com.sunxn.news.vo.CategoryNewsItemVo;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,6 +30,8 @@ public class CategoryService {
 
     @Autowired
     private CategoryMapper categoryMapper;
+    @Autowired
+    private NewsItemMapper newsItemMapper;
 
     /**
      * 查询所有新闻类目
@@ -122,4 +129,44 @@ public class CategoryService {
         }
     }
 
+    /**
+     * 根据type查询启用状态的category集合
+     * @param type 类型
+     * @return
+     */
+    public List<Category> findCategoriesByType(Integer type) {
+        Category category = new Category();
+        category.setStatus(true);
+        category.setType(type);
+        List<Category> categories = categoryMapper.select(category);
+        if (CollectionUtils.isEmpty(categories)) {
+            throw new SunxnNewsException(NewsSystemExceptionEnum.NOT_FOUND_CATEGORIES);
+        }
+        return categories;
+    }
+
+    /**
+     * 根据type查询category以及对应的newsItem集合
+     * @param type
+     * @return
+     */
+    public List<CategoryNewsItemVo> findCategoryNewsItemsListByType(Integer type) {
+        Category category = new Category();
+        category.setType(type);
+        List<Category> categoryList = categoryMapper.select(category);
+        if (CollectionUtils.isEmpty(categoryList)) {
+            throw new SunxnNewsException(NewsSystemExceptionEnum.NOT_FOUND_CATEGORIES);
+        }
+        List<CategoryNewsItemVo> categoryNewsItemVoList = new ArrayList<>();
+        NewsItem newsItem = new NewsItem();
+        categoryList.forEach(c -> {
+            CategoryNewsItemVo categoryNewsItemVo = new CategoryNewsItemVo();
+            BeanUtils.copyProperties(c, categoryNewsItemVo);
+            newsItem.setCategoryId(c.getId());
+            List<NewsItem> newsItemList = newsItemMapper.select(newsItem);
+            categoryNewsItemVo.setNewsItems(newsItemList);
+            categoryNewsItemVoList.add(categoryNewsItemVo);
+        });
+        return categoryNewsItemVoList;
+    }
 }

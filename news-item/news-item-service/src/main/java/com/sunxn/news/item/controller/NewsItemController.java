@@ -78,8 +78,23 @@ public class NewsItemController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    /**
+     * 根据categoryId查询newsItem
+     * @param categoryId
+     * @return
+     */
     @GetMapping("find/{categoryId}")
     public ResponseEntity<List<NewsItem>> findNewsItemsByCategoryId(@PathVariable("categoryId")Long categoryId) {
         return ResponseEntity.ok(newsItemService.findNewsItemsByCategoryId(categoryId));
+    }
+
+    /**
+     * 根据id查询newsItem
+     * @param id
+     * @return
+     */
+    @GetMapping("/find/newsItem/{id}")
+    public ResponseEntity<NewsItem> findNewsItemById(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(newsItemService.findNewsItemById(id));
     }
 }

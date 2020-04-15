@@ -194,4 +194,16 @@ public class NewsItemService {
         }
     }
 
+    /**
+     * 根据id查询newsItem
+     * @param id
+     * @return
+     */
+    public NewsItem findNewsItemById(Long id) {
+        NewsItem newsItem = newsItemMapper.selectByPrimaryKey(id);
+        if (newsItem == null) {
+            throw new SunxnNewsException(NewsSystemExceptionEnum.NOT_FOUND_NEWS_ITEM);
+        }
+        return newsItem;
+    }
 }
