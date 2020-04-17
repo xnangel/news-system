@@ -17,6 +17,12 @@ import tk.mybatis.spring.annotation.MapperScan;
 @MapperScan("com.sunxn.news.webcrawler.dao")
 public class WebCrawlerApplication {
 
+    // TODO 对爬取到的数据进行关键词抽取分析
+    // TODO 客户端的用户搜索新闻
+    // TODO 客户端的新闻推荐
+    // TODO 管理员的登录授权
+    // TODO Rabbitmq 消息通知
+
     public static void main(String[] args) {
         SpringApplication.run(WebCrawlerApplication.class, args);
     }

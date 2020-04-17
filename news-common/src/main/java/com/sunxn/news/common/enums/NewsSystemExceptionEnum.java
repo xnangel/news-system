@@ -30,6 +30,7 @@ public enum NewsSystemExceptionEnum {
     CATEGORY_UPDATE_ERROR(500, "分类更新失败"),
     CATEGORY_SAVE_ERROR(500, "分类保存失败"),
     CATEGORY_NAME_SAME_ERROR(400, "分类名称唯一不能相同"),
+    CAROUSEL_NEWS_SAVE_ERROR(500, "轮播图新闻信息保存失败"),
     ;
 
     private int code;

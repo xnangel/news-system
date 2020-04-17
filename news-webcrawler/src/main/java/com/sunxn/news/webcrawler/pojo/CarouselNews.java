@@ -7,19 +7,21 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * @description: 新闻类目类
- * @data: 2020/3/27 19:42
+ * @description: 新闻轮播对象
+ * @data: 2020/4/16 16:39
  * @author: xiaoNan
  */
 @Data
-@Table(name = "tb_category")
-public class Category {
+@Table(name = "tb_news_carousel")
+public class CarouselNews {
 
     @Id
     @KeySql(useGeneratedKeys = true)
     private Long id;
-    private String name;
-    private Integer type;
-    private Boolean status;
+    private Long categoryId;
+    private Long newsId;
+    private String title;
+    private String imageUrl;
     private String notes;
+    private Integer sorted;
 }

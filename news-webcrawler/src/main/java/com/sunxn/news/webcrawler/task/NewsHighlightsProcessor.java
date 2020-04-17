@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * @description: 新闻页面处理器
+ * @description: 新闻页面处理器 人民日报 要闻和其他分类
  * @data: 2020/3/26 21:06
  * @author: xiaoNan
  */
