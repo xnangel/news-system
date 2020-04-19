@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sunxn.news.common.enums.NewsSystemExceptionEnum;
 import com.sunxn.news.common.exception.SunxnNewsException;
+import com.sunxn.news.common.utils.DateUtil;
 import com.sunxn.news.common.vo.PageResult;
 import com.sunxn.news.item.mapper.CategoryMapper;
 import com.sunxn.news.item.mapper.NewsItemMapper;
@@ -18,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -158,15 +160,32 @@ public class CategoryService {
             throw new SunxnNewsException(NewsSystemExceptionEnum.NOT_FOUND_CATEGORIES);
         }
         List<CategoryNewsItemVo> categoryNewsItemVoList = new ArrayList<>();
-        NewsItem newsItem = new NewsItem();
         categoryList.forEach(c -> {
             CategoryNewsItemVo categoryNewsItemVo = new CategoryNewsItemVo();
             BeanUtils.copyProperties(c, categoryNewsItemVo);
-            newsItem.setCategoryId(c.getId());
-            List<NewsItem> newsItemList = newsItemMapper.select(newsItem);
-            categoryNewsItemVo.setNewsItems(newsItemList);
+
+            categoryNewsItemVo.setNewsItems(this.getNewsItemListByCondition(c.getId(), true, true));
+
             categoryNewsItemVoList.add(categoryNewsItemVo);
         });
         return categoryNewsItemVoList;
+    }
+
+    private List<NewsItem> getNewsItemListByCondition(Long categoryId, Boolean isSent, Boolean isTodayUpdate) {
+        Example example = new Example(NewsItem.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("categoryId", categoryId);
+        criteria.andEqualTo("isDelete", false);
+        if (isSent != null) {
+            criteria.andEqualTo("status", isSent);
+        }
+        if (isTodayUpdate != null) {
+            Date nowTime = new Date();
+            Date timeStart = DateUtil.getStartOfDay(nowTime);
+            Date timeEnd = DateUtil.getEndOfDay(nowTime);
+            criteria.andGreaterThanOrEqualTo("updateTime", DateUtil.parseDateToStr(timeStart, DateUtil.DATE_FORMAT_YYYY_MM_DD_HH_MI_SS));
+            criteria.andLessThanOrEqualTo("updateTime", DateUtil.parseDateToStr(timeEnd, DateUtil.DATE_FORMAT_YYYY_MM_DD_HH_MI_SS));
+        }
+        return newsItemMapper.selectByExample(example);
     }
 }

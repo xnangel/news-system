@@ -24,4 +24,5 @@ public class CarouselNews {
     private String imageUrl;
     private String notes;
     private Integer sorted;
+    private Boolean isDelete;
 }

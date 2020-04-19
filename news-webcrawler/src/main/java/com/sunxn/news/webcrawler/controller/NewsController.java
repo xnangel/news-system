@@ -53,12 +53,21 @@ public class NewsController {
     }
 
     /**
-     * 爬取 军事新闻
+     * 爬取 军事新闻 轮播图新闻
      * @return
      */
-    @GetMapping("/newsMilitary")
-    public ResponseEntity<Void> newsMilitary() {
+    @GetMapping("/newsMilitaryCarousel")
+    public ResponseEntity<Void> newsMilitaryCarousel() {
         militaryNewsCarouselProcessor.MilitaryNewsCarouselProcess();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    /**
+     * 爬取 军事新闻 即时新闻
+     * @return
+     */
+    @GetMapping("/newsMilitaryTest")
+    public ResponseEntity<Void> newsMilitaryTest() {
         militaryNewsTextProcessor.MilitaryNewsTextProcess();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

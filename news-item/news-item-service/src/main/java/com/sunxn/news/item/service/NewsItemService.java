@@ -46,10 +46,25 @@ public class NewsItemService {
      * @param categoryId
      * @return
      */
-    public List<NewsItem> findNewsItemsByCategoryId(Long categoryId) {
-        NewsItem newsItem = new NewsItem();
-        newsItem.setCategoryId(categoryId);
-        List<NewsItem> newsItems = newsItemMapper.select(newsItem);
+    public List<NewsItem> findNewsItemsByCategoryId(Long categoryId, Boolean isSent, Boolean isTodayUpdate) {
+        Example example = new Example(NewsItem.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("categoryId", categoryId);
+        // 排除掉在垃圾箱中的
+        criteria.andEqualTo("isDelete", false);
+        // 是否已经发布
+        if (isSent != null) {
+            criteria.andEqualTo("status", isSent);
+        }
+        // 是否是今日更新，即是否是今日新闻
+        if (isTodayUpdate != null) {
+            Date nowTime = new Date();
+            Date timeStart = DateUtil.getStartOfDay(nowTime);
+            Date timeEnd = DateUtil.getEndOfDay(nowTime);
+            criteria.andGreaterThanOrEqualTo("updateTime", DateUtil.parseDateToStr(timeStart, DateUtil.DATE_FORMAT_YYYY_MM_DD_HH_MI_SS));
+            criteria.andLessThanOrEqualTo("updateTime", DateUtil.parseDateToStr(timeEnd, DateUtil.DATE_FORMAT_YYYY_MM_DD_HH_MI_SS));
+        }
+        List<NewsItem> newsItems = newsItemMapper.selectByExample(example);
         if (CollectionUtils.isEmpty(newsItems)) {
             throw new SunxnNewsException(NewsSystemExceptionEnum.NOT_FOUND_NEWS_ITEM);
         }
@@ -65,14 +80,17 @@ public class NewsItemService {
      * @param desc     是否降序
      * @param isSend    是否发布
      * @param isToday   是否是今日新闻
+     * @param isDelete  是否是被删除到垃圾箱中的数据
      * @return
      */
-    public PageResult<NewsItemVo> findNewsItemsByCondition(Integer page, Integer rows, String key, String sortBy, Boolean desc, Boolean isSend, Boolean isToday) {
+    public PageResult<NewsItemVo> findNewsItemsByCondition(Integer page, Integer rows, String key, String sortBy, Boolean desc, Boolean isSend, Boolean isToday, Boolean isDelete) {
         // 分页
         PageHelper.startPage(page, rows);
         // 过滤
         Example example = new Example(NewsItem.class);
         Example.Criteria criteria = example.createCriteria();
+        // 是否在垃圾箱中
+        criteria.andEqualTo("isDelete", isDelete);
         // 搜索字段过滤
         if (StringUtils.isNotBlank(key)) {
             criteria.andLike("title", "%" + key + "%");
@@ -141,7 +159,7 @@ public class NewsItemService {
      * @param newsId
      */
     @Transactional
-    public void deleteNewsItemById(Long newsId) {
+    public void deleteNewsItemPermanentlyById(Long newsId) {
         NewsDetail newsDetail = new NewsDetail();
         newsDetail.setNewsId(newsId);
         if (newsDetailMapper.delete(newsDetail) != 1) {
@@ -205,5 +223,57 @@ public class NewsItemService {
             throw new SunxnNewsException(NewsSystemExceptionEnum.NOT_FOUND_NEWS_ITEM);
         }
         return newsItem;
+    }
+
+    /**
+     * 根据newsItem ids 永久 批量删除 newsItem和newsDetail信息,不可还原
+     * @param ids
+     */
+    @Transactional
+    public void deleteNewsItemListPermanently(List<Long> ids) {
+        ids.forEach(id -> {
+            deleteNewsItemPermanentlyById(id);
+        });
+    }
+
+    /**
+     * 根据newsItem id 把newsItem删除到垃圾箱中，可还原的
+     * @param id
+     */
+    public void deleteNewsItemTemporarilyById(Long id) {
+        NewsItem newsItem = newsItemMapper.selectByPrimaryKey(id);
+        if (newsItem == null) {
+            throw new SunxnNewsException(NewsSystemExceptionEnum.NOT_FOUND_NEWS_ITEM);
+        }
+        newsItem.setIsDelete(true);
+        if (newsItemMapper.updateByPrimaryKeySelective(newsItem) != 1) {
+            throw new SunxnNewsException(NewsSystemExceptionEnum.NEWS_ITEM_DELETE_TEMPORARILY_ERROR);
+        }
+    }
+
+    /**
+     * 根据id 把newsItem从垃圾箱中还原
+     * @param id
+     */
+    public void reductionNewsItemById(Long id) {
+        NewsItem newsItem = newsItemMapper.selectByPrimaryKey(id);
+        if (newsItem == null) {
+            throw new SunxnNewsException(NewsSystemExceptionEnum.NOT_FOUND_NEWS_ITEM);
+        }
+        newsItem.setIsDelete(false);
+        if (newsItemMapper.updateByPrimaryKeySelective(newsItem) != 1) {
+            throw new SunxnNewsException(NewsSystemExceptionEnum.NEWS_ITEM_REDUCTION_ERROR);
+        }
+    }
+
+    /**
+     * 根据ids 批量把newsItem从垃圾相中还原
+     * @param ids
+     */
+    @Transactional
+    public void reductionNewsItemList(List<Long> ids) {
+        ids.forEach(id -> {
+            reductionNewsItemById(id);
+        });
     }
 }

@@ -35,9 +35,10 @@ public class NewsItemController {
             @RequestParam(value = "sortBy", required = false) String sortBy,
             @RequestParam(value = "desc", defaultValue = "true") Boolean desc,
             @RequestParam(value = "isSend", required = false) Boolean isSend,
-            @RequestParam(value = "isToday", defaultValue = "false") Boolean isToday
+            @RequestParam(value = "isToday", defaultValue = "false") Boolean isToday,
+            @RequestParam(value = "isDelete", defaultValue = "false") Boolean isDelete
     ) {
-        return ResponseEntity.ok(newsItemService.findNewsItemsByCondition(page, rows, key, sortBy, desc, isSend, isToday));
+        return ResponseEntity.ok(newsItemService.findNewsItemsByCondition(page, rows, key, sortBy, desc, isSend, isToday, isDelete));
     }
 
     /**
@@ -50,11 +51,55 @@ public class NewsItemController {
     }
 
     /**
-     * 根据newsItem id删除newsItem和newsDetail信息
+     * 根据newsItem id删除newsItem和newsDetail信息 永久删除，即从数据库中删除
      */
-    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Void> deleteNewsItemById(@PathVariable("id") Long newsId) {
-        newsItemService.deleteNewsItemById(newsId);
+    @RequestMapping(value = "/delete/permanently/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Void> deleteNewsItemPermanentlyById(@PathVariable("id") Long newsId) {
+        newsItemService.deleteNewsItemPermanentlyById(newsId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    /**
+     * 根据newsItem ids 永久 批量删除 newsItem和newsDetail信息,不可还原
+     * @param ids
+     * @return
+     */
+    @RequestMapping(value = "/delete/permanently/list/{ids}", method = RequestMethod.DELETE)
+    public ResponseEntity<Void> deleteNewsItemListPermanently(@PathVariable("ids") List<Long> ids) {
+        newsItemService.deleteNewsItemListPermanently(ids);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    /**
+     * 根据newsItem id 把newsItem删除到垃圾箱中，可还原的
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/delete/temporarily/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Void> deleteNewsItemTemporarilyById(@PathVariable("id") Long id) {
+        newsItemService.deleteNewsItemTemporarilyById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    /**
+     * 根据id 把newsItem从垃圾箱中还原
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/reduction/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<Void> reductionNewsItemById(@PathVariable("id") Long id) {
+        newsItemService.reductionNewsItemById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    /**
+     * 根据ids 批量把newsItem从垃圾相中还原
+     * @param ids
+     * @return
+     */
+    @RequestMapping(value = "/reduction/list/{ids}", method = RequestMethod.PUT)
+    public ResponseEntity<Void> reductionNewsItemList(@PathVariable("ids") List<Long> ids) {
+        newsItemService.reductionNewsItemList(ids);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -84,8 +129,12 @@ public class NewsItemController {
      * @return
      */
     @GetMapping("find/{categoryId}")
-    public ResponseEntity<List<NewsItem>> findNewsItemsByCategoryId(@PathVariable("categoryId")Long categoryId) {
-        return ResponseEntity.ok(newsItemService.findNewsItemsByCategoryId(categoryId));
+    public ResponseEntity<List<NewsItem>> findNewsItemsByCategoryId(
+            @PathVariable("categoryId")Long categoryId,
+            @RequestParam(value = "isSent", required = false) Boolean isSent,
+            @RequestParam(value = "isTodayUpdate", required = false) Boolean isTodayUpdate
+    ) {
+        return ResponseEntity.ok(newsItemService.findNewsItemsByCategoryId(categoryId, isSent, isTodayUpdate));
     }
 
     /**

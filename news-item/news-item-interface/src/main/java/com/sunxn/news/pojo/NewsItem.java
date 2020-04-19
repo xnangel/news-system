@@ -25,4 +25,5 @@ public class NewsItem {
     private String url;
     private Date createTime;
     private Date updateTime;
+    private Boolean isDelete;
 }

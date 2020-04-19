@@ -26,6 +26,7 @@ public class NewsItem {
     private Date createTime;
     private Date updateTime;
     private String url;
+    private Boolean isDelete;
 
     @Transient
     private String categoryName;
