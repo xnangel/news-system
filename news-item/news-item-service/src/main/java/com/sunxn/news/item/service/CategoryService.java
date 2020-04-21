@@ -188,4 +188,17 @@ public class CategoryService {
         }
         return newsItemMapper.selectByExample(example);
     }
+
+    /**
+     * 根据id查询category
+     * @param id
+     * @return
+     */
+    public Category findCategoryById(Long id) {
+        Category category = categoryMapper.selectByPrimaryKey(id);
+        if (category == null) {
+            throw new SunxnNewsException(NewsSystemExceptionEnum.NOT_FOUND_CATEGORIES);
+        }
+        return category;
+    }
 }

@@ -99,4 +99,14 @@ public class CategoryController {
     public ResponseEntity<List<CategoryNewsItemVo>> findCategoryNewsItemsListByType(@PathVariable("type") Integer type) {
         return ResponseEntity.ok(categoryService.findCategoryNewsItemsListByType(type));
     }
+
+    /**
+     * 根据id查询category
+     * @param id
+     * @return
+     */
+    @GetMapping("/find/category/id")
+    public ResponseEntity<Category> findCategoryById(@RequestParam("id") Long id) {
+        return ResponseEntity.ok(categoryService.findCategoryById(id));
+    }
 }

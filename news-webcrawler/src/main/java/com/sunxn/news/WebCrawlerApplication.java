@@ -18,10 +18,10 @@ import tk.mybatis.spring.annotation.MapperScan;
 public class WebCrawlerApplication {
 
     // TODO 对爬取到的数据进行关键词抽取分析
-    // TODO 客户端的用户搜索新闻
     // TODO 客户端的新闻推荐
     // TODO 管理员的登录授权
     // TODO Rabbitmq 消息通知
+    // TODO 动态实现任务调度管理
 
     public static void main(String[] args) {
         SpringApplication.run(WebCrawlerApplication.class, args);
