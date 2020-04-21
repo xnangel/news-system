@@ -47,6 +47,10 @@
         </dependency>
 
         <!--    rabbitMQ 消息队列 依赖    -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

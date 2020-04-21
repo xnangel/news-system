@@ -9,6 +9,11 @@ spring:
       cluster-nodes: 127.0.0.1:9300
   jackson:  # json排除空属性
     default-property-inclusion: non_null
+  rabbitmq: # rabbitmq
+    host: 127.0.0.1 # 端口号
+    username: sunxn # 用户名
+    password: sunxn # 登录密码
+    virtual-host: /sunxn  # 虚拟主机
 eureka:
   client:
     service-url:

@@ -6,15 +6,18 @@ import com.sunxn.news.common.enums.NewsSystemExceptionEnum;
 import com.sunxn.news.common.exception.SunxnNewsException;
 import com.sunxn.news.common.utils.DateUtil;
 import com.sunxn.news.common.vo.PageResult;
+import com.sunxn.news.item.mapper.CarouselNewsMapper;
 import com.sunxn.news.item.mapper.CategoryMapper;
 import com.sunxn.news.item.mapper.NewsDetailMapper;
 import com.sunxn.news.item.mapper.NewsItemMapper;
+import com.sunxn.news.pojo.CarouselNews;
 import com.sunxn.news.pojo.Category;
 import com.sunxn.news.pojo.NewsDetail;
 import com.sunxn.news.pojo.NewsItem;
 import com.sunxn.news.ro.NewsRequest;
 import com.sunxn.news.vo.NewsItemVo;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,11 +43,16 @@ public class NewsItemService {
     private CategoryMapper categoryMapper;
     @Autowired
     private NewsDetailMapper newsDetailMapper;
+    @Autowired
+    private CarouselNewsMapper carouselNewsMapper;
+    @Autowired
+    private AmqpTemplate amqpTemplate;
 
     /**
-     * 根据新闻类目id查询新闻
-     * @param categoryId
-     * @return
+     * 根据新闻类目id查询 非垃圾箱的 新闻（如：客户端的新闻浏览，需要满足发布并且是今日更新）
+     * @param categoryId    新闻分类id
+     * @param isSent        是否已经发布
+     * @param isTodayUpdate 是否是今日更新
      */
     public List<NewsItem> findNewsItemsByCategoryId(Long categoryId, Boolean isSent, Boolean isTodayUpdate) {
         Example example = new Example(NewsItem.class);
@@ -57,7 +65,7 @@ public class NewsItemService {
             criteria.andEqualTo("status", isSent);
         }
         // 是否是今日更新，即是否是今日新闻
-        if (isTodayUpdate != null) {
+        if (isTodayUpdate != null && isTodayUpdate) {
             Date nowTime = new Date();
             Date timeStart = DateUtil.getStartOfDay(nowTime);
             Date timeEnd = DateUtil.getEndOfDay(nowTime);
@@ -152,10 +160,17 @@ public class NewsItemService {
         if (newsItemMapper.updateByPrimaryKeySelective(newsItem) != 1) {
             throw new SunxnNewsException(NewsSystemExceptionEnum.NEWS_ITEM_STATUS_UPDATE_ERROR);
         }
+
+        // 发送mq消息，发布状态的添加到es数据库，非发布状态的从es数据库中删除
+        if (newsItem.getStatus()) {
+            amqpTemplate.convertAndSend("item.insert", newsId);
+        } else {
+            amqpTemplate.convertAndSend("item.delete", newsId);
+        }
     }
 
     /**
-     * 通过id删除对应的newsItem和newsDetail
+     * 通过id删除对应的newsItem和newsDetail，永久性的删除，彻底删除
      * @param newsId
      */
     @Transactional
@@ -168,6 +183,16 @@ public class NewsItemService {
         if (newsItemMapper.deleteByPrimaryKey(newsId) != 1) {
             throw new SunxnNewsException(NewsSystemExceptionEnum.NEWS_ITEM_DELETE_ERROR);
         }
+        CarouselNews record = new CarouselNews();
+        record.setNewsId(newsId);
+        CarouselNews carouselNews = carouselNewsMapper.selectOne(record);
+        if (carouselNews != null) {
+            if (carouselNewsMapper.deleteByPrimaryKey(carouselNews) != 1) {
+                throw new SunxnNewsException(NewsSystemExceptionEnum.CAROUSEL_NEWS_PERMANENT_ERROR);
+            }
+        }
+
+        amqpTemplate.convertAndSend("item.delete", newsId);
     }
 
     /**
@@ -191,6 +216,8 @@ public class NewsItemService {
         if (newsDetail.getNewsId() == null || newsDetailMapper.insert(newsDetail) != 1) {
             throw new SunxnNewsException(NewsSystemExceptionEnum.NEWS_DETAILS_SAVE_FAIL);
         }
+
+        amqpTemplate.convertAndSend("item.insert", newsRequest.getId());
     }
 
     /**
@@ -210,6 +237,8 @@ public class NewsItemService {
         if (newsDetailMapper.updateByPrimaryKeySelective(newsDetail) != 1) {
             throw new SunxnNewsException(NewsSystemExceptionEnum.NEWS_DETAILS_UPDATE_ERROR);
         }
+
+        amqpTemplate.convertAndSend("item.insert", newsRequest.getId());
     }
 
     /**
@@ -249,6 +278,8 @@ public class NewsItemService {
         if (newsItemMapper.updateByPrimaryKeySelective(newsItem) != 1) {
             throw new SunxnNewsException(NewsSystemExceptionEnum.NEWS_ITEM_DELETE_TEMPORARILY_ERROR);
         }
+
+        amqpTemplate.convertAndSend("item.delete", id);
     }
 
     /**
@@ -264,6 +295,8 @@ public class NewsItemService {
         if (newsItemMapper.updateByPrimaryKeySelective(newsItem) != 1) {
             throw new SunxnNewsException(NewsSystemExceptionEnum.NEWS_ITEM_REDUCTION_ERROR);
         }
+
+        amqpTemplate.convertAndSend("item.insert", id);
     }
 
     /**
