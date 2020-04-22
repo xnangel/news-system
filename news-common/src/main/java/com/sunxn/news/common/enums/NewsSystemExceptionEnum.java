@@ -39,6 +39,9 @@ public enum NewsSystemExceptionEnum {
     CAROUSEL_NEWS_PERMANENT_ERROR(500, "轮播图新闻永久删除失败"),
     CAROUSEL_NEWS_REDUCTION_ERROR(500, "轮播图新闻还原失败"),
     CAROUSEL_NEWS_IS_SAME(400, "该轮播图新闻类似，可以从已有的更新"),
+    INVALID_USERNAME_PASSWORD(400, "用户名或密码错误"),
+    UNAUTHORIZED(403, "未授权"),
+    CREATE_TOKEN_ERROR(500, "用户凭证生成失败"),
     ;
 
     private int code;

@@ -31,3 +31,10 @@ eureka:
 mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+sunxn:
+  jwt:
+    secret: sunxn@Login(Auth}*&newsSystemAdmin12345689^7% # 登录校验的密钥，越复杂越南破解
+    publicKeyPath: E:\prictice6_JavaEE\projects\web-crawler-news-system\rsakey\rsa.pub # 公钥地址
+    privateKeyPath: E:\prictice6_JavaEE\projects\web-crawler-news-system\rsakey\rsa.pri # 私钥地址
+    expire: 30  # 过期时间，单位分钟
+    cookieName: SUNXN_TOKEN

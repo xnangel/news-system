@@ -32,3 +32,10 @@ ribbon:
   ReadTimeout: 3500 # ribbon读取超时时长
   MaxAutoRetries: 0 # 当前服务重试次数
   MaxAutoRetriesNextServer: 0 #切换服务重试次数
+sunxn:
+  jwt:
+    publicKeyPath: E:\prictice6_JavaEE\projects\web-crawler-news-system\rsakey\rsa.pub # 公钥地址
+    cookieName: SUNXN_TOKEN
+  filter:
+    allowPaths: # 网关白名单,放行列表
+      - /api/item/user/login
