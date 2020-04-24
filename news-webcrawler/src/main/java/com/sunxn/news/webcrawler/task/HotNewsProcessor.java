@@ -4,6 +4,7 @@ import com.sunxn.news.webcrawler.pipeline.NewsDataPipeline;
 import com.sunxn.news.webcrawler.pojo.NewsDetail;
 import com.sunxn.news.webcrawler.pojo.NewsItem;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
@@ -52,11 +53,16 @@ public class HotNewsProcessor implements PageProcessor {
         newsItem.setCreateTime(new Date());
         newsItem.setUpdateTime(new Date());
         newsItem.setUrl(page.getUrl().toString());
-        if (contentDiv == null) {
+        if (contentDiv == null || StringUtils.isBlank(contentDiv.toString())) {
             contentDiv = page.getHtml().css("div.video_txt_detail");
             newsItem.setTitle(contentDiv.css("div.video_txt_t h2", "text").toString());
-            newsDetail.setCome(contentDiv.css("div.t_source_l div.video_info_second span", "text").toString());
+            String come = contentDiv.css("div.t_source_l div.video_info_first div.video_info_left span.oriBox", "text").toString();
+            if (StringUtils.isNotBlank(come)) {
+                come = come.substring(come.indexOf("："));
+            }
+            newsDetail.setCome(come);
             newsDetail.setContent(contentDiv.css("div.video_txt_l p", "text").toString());
+            newsDetail.setNotes("视频");
         } else {
             newsItem.setTitle(contentDiv.css("h1.news_title", "text").toString());
             newsDetail.setCome(contentDiv.css("div.news_about p", "text").nodes().get(0).toString());

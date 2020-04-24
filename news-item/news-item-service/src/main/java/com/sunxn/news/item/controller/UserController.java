@@ -38,7 +38,7 @@ public class UserController {
      * @param password
      * @return
      */
-    @PostMapping("login")
+    @RequestMapping(value = "login", method = RequestMethod.POST)
     public ResponseEntity<Void> login(
             @RequestParam("username") String username,
             @RequestParam("password") String password,
@@ -50,6 +50,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    /**
+     * 校验用户登录状态
+     * @param token
+     * @param request
+     * @param response
+     * @return
+     */
     @GetMapping("verify")
     public ResponseEntity<UserInfo> verify(
             @CookieValue("SUNXN_TOKEN") String token,

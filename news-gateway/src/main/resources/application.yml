@@ -20,6 +20,8 @@ zuul:
       serviceId: upload-service
       strip-prefix: false
     search-service: /search/**
+  add-host-header: true # 携带请求本身的head头信息
+  sensitive-headers:    # 配置禁用使用的头信息，这里设置为null，否则set-cookie无效
 hystrix:
   command:
     default:

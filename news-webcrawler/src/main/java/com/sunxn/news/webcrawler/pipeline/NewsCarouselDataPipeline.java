@@ -6,7 +6,10 @@ import com.sunxn.news.webcrawler.pojo.NewsItem;
 import com.sunxn.news.webcrawler.service.CarouselNewsService;
 import com.sunxn.news.webcrawler.service.NewsDetailService;
 import com.sunxn.news.webcrawler.service.NewsItemService;
+import com.sunxn.news.webcrawler.service.TextRankKeyword;
+import com.sunxn.news.webcrawler.utils.HtmlUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.htmlparser.util.ParserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +32,8 @@ public class NewsCarouselDataPipeline implements Pipeline {
     private NewsDetailService newsDetailService;
     @Autowired
     private CarouselNewsService carouselNewsService;
+    @Autowired
+    private TextRankKeyword textRankKeyword;
 
     @Override
     @Transactional
@@ -46,6 +51,13 @@ public class NewsCarouselDataPipeline implements Pipeline {
             return;
         }
         newsDetail.setNewsId(newsItem.getId());
+        String content = "";
+        try {
+            content = HtmlUtil.getText(newsDetail.getContent());
+        } catch (ParserException e) {
+            log.error("【爬虫数据处理管道】 纯文本内容处理失败，异常信息为：", e);
+        }
+        newsDetail.setKeyword(textRankKeyword.getKeyword(newsItem.getTitle(), content));
         newsDetailService.save(newsDetail);
 
         CarouselNews carouselNews = resultItems.get("carouselNews");
