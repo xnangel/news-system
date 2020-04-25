@@ -88,7 +88,7 @@ public class GlobalNewsProcessor implements PageProcessor {
     @Autowired
     private NewsDataPipeline newsDataPipeline;
 
-    public void GlobalNewsProcess() {
+    public void globalNewsProcess() {
         Spider.create(new GlobalNewsProcessor())
                 .addUrl(GLOBAL_NEWS_URL)
                 .setScheduler(new QueueScheduler().setDuplicateRemover(new BloomFilterDuplicateRemover(1000000)))

@@ -35,7 +35,6 @@ public class NewsController {
      * 每天7点执行一次定时器
      * 人民日报 要闻等新闻信息
      */
-//    @Scheduled(cron = "0 0 7 * * ?")
     @GetMapping("/newsHighLights")
     public void newsHighLights() {
         highlightsProcessor.spiderProcess();
@@ -48,7 +47,7 @@ public class NewsController {
      */
     @GetMapping("/newsTopHit")
     public ResponseEntity<Void> newsTopHit() {
-        hotNewsProcessor.HotNewsProcess();
+        hotNewsProcessor.hotNewsProcess();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -58,7 +57,7 @@ public class NewsController {
      */
     @GetMapping("/newsMilitaryCarousel")
     public ResponseEntity<Void> newsMilitaryCarousel() {
-        militaryNewsCarouselProcessor.MilitaryNewsCarouselProcess();
+        militaryNewsCarouselProcessor.militaryNewsCarouselProcess();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -68,7 +67,7 @@ public class NewsController {
      */
     @GetMapping("/newsMilitaryTest")
     public ResponseEntity<Void> newsMilitaryTest() {
-        militaryNewsTextProcessor.MilitaryNewsTextProcess();
+        militaryNewsTextProcessor.militaryNewsTextProcess();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -78,7 +77,7 @@ public class NewsController {
      */
     @GetMapping("/newsGlobal")
     public ResponseEntity<Void> newsGlobal() {
-        globalNewsProcessor.GlobalNewsProcess();
+        globalNewsProcessor.globalNewsProcess();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

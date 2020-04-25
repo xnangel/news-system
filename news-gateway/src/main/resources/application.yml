@@ -13,7 +13,7 @@ zuul:
     webcrawler-service:
       path: /webcrawler/**
       serviceId: webcrawler-service
-      strip-prefix: false
+#      strip-prefix: false
     item-service: /item/**
     upload-service:
       path: /upload/**

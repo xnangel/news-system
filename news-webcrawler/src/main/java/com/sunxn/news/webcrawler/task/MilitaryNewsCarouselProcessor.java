@@ -111,7 +111,7 @@ public class MilitaryNewsCarouselProcessor implements PageProcessor {
     @Autowired
     private NewsCarouselDataPipeline newsCarouselDataPipeline;
 
-    public void MilitaryNewsCarouselProcess() {
+    public void militaryNewsCarouselProcess() {
         Spider.create(new MilitaryNewsCarouselProcessor())
                 .addUrl(MILITARY_NEWS_URL)
                 .setScheduler(new QueueScheduler().setDuplicateRemover(new BloomFilterDuplicateRemover(1000000)))

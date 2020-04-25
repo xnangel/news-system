@@ -87,7 +87,7 @@ public class HotNewsProcessor implements PageProcessor {
     @Autowired
     private NewsDataPipeline newsDataPipeline;
 
-    public void HotNewsProcess() {
+    public void hotNewsProcess() {
         Spider.create(new HotNewsProcessor())
                 .addUrl(HOT_NEWS_URL)
                 .setScheduler(new QueueScheduler().setDuplicateRemover(new BloomFilterDuplicateRemover(1000000)))

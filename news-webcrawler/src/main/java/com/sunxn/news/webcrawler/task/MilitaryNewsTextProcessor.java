@@ -78,7 +78,7 @@ public class MilitaryNewsTextProcessor implements PageProcessor {
     @Autowired
     private NewsDataPipeline newsDataPipeline;
 
-    public void MilitaryNewsTextProcess() {
+    public void militaryNewsTextProcess() {
         Spider.create(new MilitaryNewsTextProcessor())
                 .addUrl(MILITARY_NEWS_URL)
                 .setScheduler(new QueueScheduler().setDuplicateRemover(new BloomFilterDuplicateRemover(1000000)))
