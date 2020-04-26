@@ -1,5 +1,6 @@
 package com.sunxn.news.webcrawler.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.htmlparser.Parser;
 import org.htmlparser.beans.StringBean;
 import org.htmlparser.filters.CssSelectorNodeFilter;
@@ -45,6 +46,10 @@ public class HtmlUtil {
      * @return
      */
     public static String getText(String html) throws ParserException {
+        if (StringUtils.isBlank(html)) {
+            return "";
+        }
+
         StringBean bean = new StringBean();
         bean.setLinks(false);
         bean.setReplaceNonBreakingSpaces(true);

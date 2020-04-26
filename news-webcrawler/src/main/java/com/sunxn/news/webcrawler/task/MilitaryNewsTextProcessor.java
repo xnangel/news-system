@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * @author: xiaoNan
  */
 @Slf4j
-@Component
+@Component("MilitaryNewsTextProcessor")
 public class MilitaryNewsTextProcessor implements PageProcessor {
 
     private static final String MILITARY_NEWS_URL = "http://military.people.com.cn/";

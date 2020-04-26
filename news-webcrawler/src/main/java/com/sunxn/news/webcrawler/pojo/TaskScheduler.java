@@ -23,6 +23,7 @@ public class TaskScheduler {
     private String className;
     private String methodName;
     private String cronExpression;
+    private Date lastExecuteTime;
     private Date updateTime;
     private Boolean jobStatus;
     private String notes;

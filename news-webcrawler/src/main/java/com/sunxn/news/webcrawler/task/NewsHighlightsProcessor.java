@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * @author: xiaoNan
  */
 @Slf4j
-@Component
+@Component("NewsHighlightsProcessor")
 public class NewsHighlightsProcessor implements PageProcessor {
 
     private Map<String, String> map = new HashMap<>();

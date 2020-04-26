@@ -42,8 +42,6 @@ public enum NewsSystemExceptionEnum {
     INVALID_USERNAME_PASSWORD(400, "用户名或密码错误"),
     UNAUTHORIZED(403, "未授权"),
     CREATE_TOKEN_ERROR(500, "用户凭证生成失败"),
-    NOT_FOUND_TASK_EXECUTE_RECORD(404, "未找到任务执行记录"),
-    TASK_EXECUTE_RECORD_UPDATE_ERROR(500, "任务执行记录更新失败"),
     NOT_FOUND_TASK(404, "未找到爬虫任务"),
     TASK_SCHEDULER_UPDATE_ERROR(500, "定时任务更新失败"),
     ;

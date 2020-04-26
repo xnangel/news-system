@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  * @author: xiaoNan
  */
 @Slf4j
-@Component
+@Component(value = "HotNewsProcessor")
 public class HotNewsProcessor implements PageProcessor {
 
     /**
@@ -67,6 +67,10 @@ public class HotNewsProcessor implements PageProcessor {
             newsItem.setTitle(contentDiv.css("h1.news_title", "text").toString());
             newsDetail.setCome(contentDiv.css("div.news_about p", "text").nodes().get(0).toString());
             newsDetail.setContent(contentDiv.css("div.news_txt").all().stream().collect(Collectors.joining()));
+        }
+
+        if (StringUtils.isBlank(newsItem.getTitle())) {
+            return;
         }
 
         page.putField("newsItem", newsItem);

@@ -1,7 +1,6 @@
 package com.sunxn.news.webcrawler.task;
 
 import com.sunxn.news.webcrawler.pojo.TaskScheduler;
-import com.sunxn.news.webcrawler.service.TaskExecuteRecordService;
 import com.sunxn.news.webcrawler.service.TaskSchedulerService;
 import com.sunxn.news.webcrawler.utils.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -11,9 +10,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -29,15 +31,14 @@ public class UnfinishedWebCrawlerTask {
     @Autowired
     private TaskSchedulerService taskSchedulerService;
     @Autowired
-    private TaskExecuteRecordService taskExecuteRecordService;
-    @Autowired
     private ThreadPoolTaskScheduler threadPoolTaskScheduler;
-    private ScheduledFuture<?> future;
+
+    private ConcurrentHashMap<String, ScheduledFuture<?>> map = new ConcurrentHashMap<>();
 
     @Bean(name = "threadPoolTaskScheduler")
     public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
         ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-        taskScheduler.setPoolSize(20);
+        taskScheduler.setPoolSize(30);
         taskScheduler.setThreadNamePrefix("Scheduler -- ");
         // 线程池对拒绝任务（无线程可用）的处理策略。目前支持AbortPolicy、CallerRunsPolicy等
         taskScheduler.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
@@ -48,19 +49,40 @@ public class UnfinishedWebCrawlerTask {
         return taskScheduler;
     }
 
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Transactional
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void execute() {
-        String name = "tb_task_scheduler";
-        System.out.println("ceshi...");
-        if (!taskExecuteRecordService.isExecuteToday(name)) {
-            System.out.println("execute.......");
-            List<TaskScheduler> startUpTaskList = taskSchedulerService.findAllStartUpTask();
-            startUpTaskList.forEach(startUpTask -> {
-                Runnable taskRunnable = this.createTaskRunnable(startUpTask);
-                threadPoolTaskScheduler.schedule(taskRunnable, new CronTrigger(startUpTask.getCronExpression()));
-            });
+        List<TaskScheduler> startUpUnExecuteTaskList = taskSchedulerService.findAllStartUpUnExecuteTask();
+        startUpUnExecuteTaskList.forEach(startUpUnExecuteTask -> {
+            // 把定时任务加入线程池中
+            this.startCron(startUpUnExecuteTask);
+        });
+    }
 
-            taskExecuteRecordService.updateTimeByName(name);
+    /**
+     * 处理定时任务
+     * @param startUpUnExecuteTask
+     */
+    @Transactional
+    void startCron(TaskScheduler startUpUnExecuteTask) {
+        ScheduledFuture<?> future = null;
+        if (this.map.containsKey(startUpUnExecuteTask.getClassName())) {
+            future = this.map.get(startUpUnExecuteTask.getClassName());
+            this.stopCron(future);
+        }
+        future = threadPoolTaskScheduler.schedule(this.createTaskRunnable(startUpUnExecuteTask), new CronTrigger(startUpUnExecuteTask.getCronExpression()));
+        this.map.put(startUpUnExecuteTask.getClassName(), future);
+        // 修改定时任务的执行时间
+        taskSchedulerService.updateTaskSchedulerById(startUpUnExecuteTask.getId(), new Date());
+    }
+
+    /**
+     * 如果定时任务不为null，则暂停定时任务
+     * @param future
+     */
+    private void stopCron(ScheduledFuture<?> future) {
+        if (future != null) {
+            future.cancel(true);
         }
     }
 

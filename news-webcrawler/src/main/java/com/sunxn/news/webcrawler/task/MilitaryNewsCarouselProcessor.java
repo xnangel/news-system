@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * @author: xiaoNan
  */
 @Slf4j
-@Component
+@Component(value = "MilitaryNewsCarouselProcessor")
 public class MilitaryNewsCarouselProcessor implements PageProcessor {
 
     private static final String MILITARY_NEWS_URL = "http://military.people.com.cn/";

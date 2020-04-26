@@ -17,8 +17,7 @@ import tk.mybatis.spring.annotation.MapperScan;
 @MapperScan("com.sunxn.news.webcrawler.dao")
 public class WebCrawlerApplication {
 
-    // TODO 客户端的新闻推荐
-    // TODO 动态实现任务调度管理Debug完善
+    // TODO 客户端的新闻推荐（扩展）
 
     public static void main(String[] args) {
         SpringApplication.run(WebCrawlerApplication.class, args);

@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * @author: xiaoNan
  */
 @Slf4j
-@Component
+@Component("GlobalNewsProcessor")
 public class GlobalNewsProcessor implements PageProcessor {
 
     private static final String GLOBAL_NEWS_URL = "https://www.huanqiu.com/";
