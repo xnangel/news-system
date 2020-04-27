@@ -49,7 +49,8 @@ public class CookieUtil {
             // 例子：f.com.cn 是 com.cn 的子域名
             // 设置domain为 b.e.f.com.cn 或 .b.e.f.com.cn 没有区别，注意前面的点，即只要是为cookie显示的声明domain，前面带不带点没有区别
             if (request != null) {
-                cookie.setDomain(getDomainName(request));
+//                cookie.setDomain(getDomainName(request));
+                cookie.setDomain("localhost");
             }
             cookie.setPath("/");
 

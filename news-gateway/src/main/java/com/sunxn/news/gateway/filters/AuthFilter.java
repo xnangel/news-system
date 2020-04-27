@@ -51,8 +51,7 @@ public class AuthFilter extends ZuulFilter {
         HttpServletRequest request = ctx.getRequest();
         // 获取请求的uri路径
         String path = request.getRequestURI();
-//        return !isAllowPath(path);
-        return false;
+        return !isAllowPath(path);
     }
 
     private boolean isAllowPath(String path) {
