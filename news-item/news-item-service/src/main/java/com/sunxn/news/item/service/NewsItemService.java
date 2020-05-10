@@ -204,6 +204,7 @@ public class NewsItemService {
         NewsItem newsItem = new NewsItem();
         BeanUtils.copyProperties(newsRequest, newsItem);
         newsItem.setId(null);
+        newsItem.setIsDelete(false);
         newsItem.setCreateTime(new Date());
         newsItem.setUpdateTime(new Date());
         if (newsItemMapper.insert(newsItem) != 1) {

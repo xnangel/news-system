@@ -79,13 +79,15 @@ public class SearchService {
         // 封装newsItemVo对象
         NewsItem newsItem = newsItemClient.findNewsItemById(newsId);
         if (newsItem == null) {
-            throw new SunxnNewsException(NewsSystemExceptionEnum.NOT_FOUND_NEWS_ITEM);
+            return;
+//            throw new SunxnNewsException(NewsSystemExceptionEnum.NOT_FOUND_NEWS_ITEM);
         }
 
         // 查询分类名称
         Category category = categoryClient.findCategoryById(newsItem.getCategoryId());
         if (category == null) {
-            throw new SunxnNewsException(NewsSystemExceptionEnum.NOT_FOUND_CATEGORIES);
+            return;
+//            throw new SunxnNewsException(NewsSystemExceptionEnum.NOT_FOUND_CATEGORIES);
         }
 
         NewsItemVo newsItemVo = new NewsItemVo();

@@ -41,3 +41,10 @@ sunxn:
   filter:
     allowPaths: # 网关白名单,放行列表
       - /api/item/user/login
+      - /api/item/newsItem/find
+      - /api/item/category/find
+      - /api/search/search/search
+      - /api/item/newsDetail/find
+      - /api/upload/image
+      - /api/item/carousel/find
+      - /api/webcrawler/task/find
